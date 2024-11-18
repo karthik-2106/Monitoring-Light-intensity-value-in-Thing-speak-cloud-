@@ -1,4 +1,6 @@
-# Monitoring-Light-intensity-value-in-Thing-speak-cloud
+## NAME : KARTHIKEYAN M
+## REG NO : 212223110020
+# EX 04 Monitoring Light intensity value in Thing speak cloud
 # Uploading LDR sensor data in Thing Speak cloud
 
 # AIM:
@@ -90,8 +92,67 @@ Prototype and build IoT systems without setting up servers or developing web sof
 
  
 # PROGRAM:
+```
+#include <WiFi.h>
+
+#include "ThingSpeak.h" // always include thingspeak header file after other header files and custom macros
+#define ldr_pin 23
+char ssid[] = "iQOO z7S 5G";   // your network SSID (name) 
+char pass[] = "12345678";   // your network password
+int keyIndex = 0;            // your network key Index number (needed only for WEP)
+WiFiClient  client;
+
+unsigned long myChannelNumber =  2715702;
+const int ChannelField = 1;
+const char * myWriteAPIKey = "2IONIL1ZG7OXGZ83";
+
+void setup() 
+{
+  Serial.begin(115200);  //Initialize serial
+  pinMode(ldr_pin, INPUT);
+  WiFi.mode(WIFI_STA);   
+  ThingSpeak.begin(client);  // Initialize ThingSpeak
+}
+
+void loop() 
+{
+  // Connect or reconnect to WiFi
+  if(WiFi.status() != WL_CONNECTED)
+{
+    Serial.print("Attempting to connect to SSID: ");
+    
+    while(WiFi.status() != WL_CONNECTED)
+    {
+      WiFi.begin(ssid, pass); 
+      Serial.print(".");
+      delay(5000);     
+    } 
+    Serial.println("\nConnected.");
+  }
+
+  /* LDR sensor */
+  int ldr_value= digitalRead(ldr_pin);      //assign value of LDR sensor to a temporary variable
+  Serial.println("Intensity="); //print on serial monitor using ""
+  Serial.println(ldr_value);         //display output on serial monitor
+  
+  int x = ThingSpeak.writeField(myChannelNumber, ChannelField, ldr_value, myWriteAPIKey);
+  if(x == 200)
+{
+    Serial.println("Channel update successful.");
+  }
+  else
+{
+    Serial.println("Problem updating channel. HTTP error code " + String(x));
+  }
+   delay(20000); // Wait 20 seconds to update the channel again
+}
+```
 # CIRCUIT DIAGRAM:
+![ldr](https://github.com/user-attachments/assets/95fb1e5c-db71-4d0e-82fa-476c34ecb663)
+
 # OUTPUT:
+![ldr output](https://github.com/user-attachments/assets/069aaf97-c992-462a-97d0-acdac1e95fbb)
+
 # RESULT:
 
 Thus the light intensity values are updated in the Thing speak cloud using ESP32 controller.
